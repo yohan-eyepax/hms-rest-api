@@ -2,12 +2,13 @@
 
 const AWS = require("aws-sdk")
 const { sendResponse } = require("../../utils");
+const Tables = require("../../constants/tables")
 
 const getEmployees = async (event) => {
     try {
         const dynamoDb = new AWS.DynamoDB.DocumentClient()
         const result = await dynamoDb.scan({
-            TableName: "EmployeeTable"
+            TableName: Tables.employeeTable
         }).promise()
 
         return sendResponse ( 200, result.Items ?? [])

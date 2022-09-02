@@ -23,7 +23,8 @@ const signUp = async (event) => {
                 {
                     Name: 'email_verified',
                     Value: 'true'
-                }],
+                }
+            ],
             MessageAction: 'SUPPRESS'
         }
         const response = await cognito.adminCreateUser(params).promise();

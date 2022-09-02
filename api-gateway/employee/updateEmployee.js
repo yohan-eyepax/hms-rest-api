@@ -4,6 +4,7 @@ const AWS = require("aws-sdk");
 const middy = require("@middy/core");
 const httpJsonBodyParser = require("@middy/http-json-body-parser");
 const { sendResponse } = require("../../utils");
+const Tables = require("../../constants/tables")
 
 const updateEmployee = async (event) => {
   try { 
@@ -11,16 +12,20 @@ const updateEmployee = async (event) => {
 
     const { firstName, lastName, email, mobileNumber } = event.body;
     const { id } = event.pathParameters;
+    const { sub } = event.requestContext.authorizer.claims
+    const updatedAt = new Date().toISOString();
 
     await dynamoDb.update({
-        TableName: "EmployeeTable",
+        TableName: Tables.employeeTable,
         Key: { id },
-        UpdateExpression: 'set firstName = :firstName, lastName = :lastName, email = :email, mobileNumber = :mobileNumber',
+        UpdateExpression: 'set firstName = :firstName, lastName = :lastName, email = :email, mobileNumber = :mobileNumber, updatedAt = :updatedAt, updatedBy = :updatedBy',
         ExpressionAttributeValues: {
             ':firstName' : firstName,
             ':lastName': lastName,
             ':email': email,
-            ':mobileNumber': mobileNumber
+            ':mobileNumber': mobileNumber,
+            ':updatedAt': updatedAt,
+            ':updatedBy': sub
         },
         ReturnValues: 'ALL_NEW'
     }).promise();

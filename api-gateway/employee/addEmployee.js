@@ -4,10 +4,13 @@ const AWS = require("aws-sdk");
 const middy = require("@middy/core");
 const httpJsonBodyParser = require("@middy/http-json-body-parser");
 const { sendResponse } = require("../../utils");
+const Tables = require("../../constants/tables")
+const { EntityStatus } = require("../../constants/entityStatus");
 
 const addEmployee = async (event) => {
     try {
         const dynamoDb = new AWS.DynamoDB.DocumentClient()
+        const { sub } = event.requestContext.authorizer.claims
 
         const { firstName, lastName, email, mobileNumber } = event.body;
         const createdAt = new Date().toISOString();
@@ -19,11 +22,15 @@ const addEmployee = async (event) => {
             lastName,
             email,
             mobileNumber,
-            createdAt
+            createdAt,
+            createdBy: sub,
+            updatedAt: null,
+            updatedBy: null,
+            status: EntityStatus.Active
         }
 
         await dynamoDb.put({
-            TableName: "EmployeeTable",
+            TableName: Tables.employeeTable,
             Item: newEmployee
         }).promise();
 

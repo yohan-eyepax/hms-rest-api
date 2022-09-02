@@ -8,6 +8,7 @@ const cognito = new AWS.CognitoIdentityServiceProvider()
 const signout = async (event) => {
     try {
         const { user_pool_id } = process.env
+        console.log(event.requestContext.authorizer.claims)
         const { email } = event.requestContext.authorizer.claims
         const params = {
             UserPoolId: user_pool_id,

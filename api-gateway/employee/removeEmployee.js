@@ -2,13 +2,14 @@
 
 const AWS = require("aws-sdk")
 const { sendResponse } = require("../../utils");
+const Tables = require("../../constants/tables")
 
 const removeEmployee = async (event) => {
     try {
         const dynamoDb = new AWS.DynamoDB.DocumentClient()
         const { id } = event.pathParameters
         const params = {
-            TableName: "EmployeeTable",
+            TableName: Tables.employeeTable,
             Key: { id }
         }
         const result = await dynamoDb.delete(params)
